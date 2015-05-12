@@ -1,48 +1,176 @@
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/gb1080"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="20dp"
     tools:context="com.revyuk.myterminal.SearchFragment">
-    <TextView
-        android:text="Выберите категорию услуг"
-        style="@android:style/TextAppearance.Medium"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <Spinner
-        android:id="@+id/service"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
+    <LinearLayout
+        android:layout_alignParentTop="true"
+        android:orientation="vertical"
+        android:padding="20dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-    <TextView
-        android:text="Выберите поставщика услуг"
-        style="@android:style/TextAppearance.Medium"
-        android:layout_marginTop="10dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <Spinner
-        android:id="@+id/agent"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-    <TextView
-        android:text="Список найденных терминалов"
-        style="@android:style/TextAppearance.Medium"
-        android:layout_marginTop="10dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <ListView
-        android:id="@+id/terminals"
-        android:layout_weight="1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-    <Button
-        android:text="Показать ближайшие на карте"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-</LinearLayout>
+        android:layout_height="wrap_content">
+        <TextView
+            android:text="@string/main_text"
+            android:textColor="#FFFFFF"
+            android:gravity="center_horizontal"
+            android:textSize="20sp"
+            android:shadowDy="0"
+            android:shadowDx="0"
+            android:shadowRadius="5"
+            android:shadowColor="#000000"
+            android:paddingBottom="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/current_location_text"
+                android:shadowDy="0"
+                android:shadowDx="0"
+                android:shadowRadius="5"
+                android:shadowColor="#000000"
+                android:singleLine="true"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content" />
+            <ImageView
+                android:id="@+id/change_location_img"
+                android:src="@android:drawable/ic_dialog_map"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <TextView
+            android:text="@string/select_radius"
+            android:background="@drawable/bg_dark"
+            android:gravity="center_horizontal"
+            android:textColor="#FFFFFF"
+            android:padding="5dp"
+            android:shadowDy="0"
+            android:shadowDx="0"
+            android:shadowRadius="5"
+            android:shadowColor="#000000"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:background="@drawable/bg_light"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Spinner
+                android:id="@+id/radius"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <TextView
+            android:text="@string/select_service"
+            android:background="@drawable/bg_dark"
+            android:gravity="center_horizontal"
+            android:textColor="#FFFFFF"
+            android:padding="5dp"
+            android:shadowDy="0"
+            android:shadowDx="0"
+            android:shadowRadius="5"
+            android:shadowColor="#000000"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:background="@drawable/bg_light"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Spinner
+                android:id="@+id/service"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <TextView
+            android:text="@string/select_agent"
+            android:background="@drawable/bg_dark"
+            android:gravity="center_horizontal"
+            android:textColor="#FFFFFF"
+            android:padding="5dp"
+            android:shadowDy="0"
+            android:shadowDx="0"
+            android:shadowRadius="5"
+            android:shadowColor="#000000"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:background="@drawable/bg_light"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Spinner
+                android:id="@+id/agent"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:background="@drawable/bg_dark"
+            android:gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:text="@string/list_found_terminals"
+                android:textColor="#FFFFFF"
+                android:padding="5dp"
+                android:shadowDy="0"
+                android:shadowDx="0"
+                android:shadowRadius="5"
+                android:shadowColor="#000000"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/found_count"
+                android:textColor="#FFFFFF"
+                android:padding="5dp"
+                android:shadowDy="0"
+                android:shadowDx="0"
+                android:shadowRadius="5"
+                android:shadowColor="#000000"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:id="@+id/as_list_btn"
+                android:layout_margin="4dp"
+                android:background="@drawable/bg_light"
+                android:text="Показать списком"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <Button
+                android:id="@+id/show_on_map"
+                android:layout_margin="4dp"
+                android:background="@drawable/bg_light"
+                android:text="Показать на карте"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

@@ -1,6 +1,8 @@
 package com.revyuk.myterminal;
 
 
+import android.content.Context;
+import android.gesture.Prediction;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -8,6 +10,7 @@ import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.revyuk.myterminal.model.PredictionsResponse;
 import com.revyuk.myterminal.model.ResponseModel;
 import com.revyuk.myterminal.model.Result;
 import com.revyuk.myterminal.model.ResultList;
@@ -26,11 +29,13 @@ import java.util.List;
 public class TerminalHttpHelper {
     public final String API_URL = "http://terminals.vivat-tv.com/data_term/";
 
+    Context context;
     HelperCallback helperCallback;
     AsyncHttpClient client = new AsyncHttpClient();
     Gson gson;
     ResponseModel responseModel;
     RequestParams params;
+    String radius;
 
     interface HelperCallback {
         void isError(int requestCode);
@@ -38,12 +43,15 @@ public class TerminalHttpHelper {
         void setAgentSpinner(String[] list);
         void setTerminalList(ResultList[] resultList);
         void myAddrSpace(List<String> addr);
+        void setAddress(String addr);
     }
 
     public TerminalHttpHelper (SearchFragment fragment) {
         helperCallback = fragment;
         gson = new Gson();
         client.setConnectTimeout(5);
+        radius = fragment.getResources().getStringArray(R.array.radius_array)[0];
+        context = fragment.getActivity();
     }
 
     public void getMyAddr(LatLng pos) {
@@ -54,6 +62,25 @@ public class TerminalHttpHelper {
         params.add("region", "ua");
         params.add("language", "ru");
         client.get(url, params, new HttpResponseHandler(3));
+    }
+
+    public void autocompleteText(String text, LatLng myLocation) {
+        String url = "https://maps.googleapis.com/maps/api/place/autocomplete/json";
+        RequestParams params = new RequestParams();
+        params.add("input", text);
+        params.add("sensor", "false");
+        params.add("types", "geocode");
+        params.add("components", "country:ua");
+        params.add("location", myLocation.latitude + "," + myLocation.longitude);
+        params.add("radius", "1000");
+        params.add("key", "AIzaSyDCE7xs40dLOf8pQpCRcZKOZuYAErdMz18");
+        params.setContentEncoding("UTF-8");
+        Log.d("XXX", url);
+        client.get(url, params, new HttpResponseHandler(5));
+    }
+
+    public void setRadius(String radius) {
+        this.radius = radius;
     }
 
     public void getServices() {
@@ -74,6 +101,7 @@ public class TerminalHttpHelper {
         params.add("agent", agent);
         params.add("lat", String.valueOf(myPosition.latitude));
         params.add("lng", String.valueOf(myPosition.longitude));
+        params.add("radius", radius);
         client.get(url, params, new HttpResponseHandler(4));
     }
 
@@ -105,20 +133,25 @@ public class TerminalHttpHelper {
                     break;
                 case 3:
                     String str = new String(bytes);
-                    Log.d("XXX", str);
+                    //Log.d("XXX", str);
                     GeocodingResponse geocodingResponse = gson.fromJson(str, GeocodingResponse.class);
-                    for(GeocodingResult result:geocodingResponse.results) {
-                        Log.d("XXX", ">"+result.formatted_address);
-                        for(AddressComponent component: result.address_components) {
-                            Log.d("XXX", "---------------->"+component.types[0]+", "+component.long_name);
-                        }
+                    if(geocodingResponse.results.length > 0) {
+                        helperCallback.setAddress(geocodingResponse.results[0].formatted_address);
                     }
                     break;
                 case 4:
                     String str2 = new String(bytes);
-                    Log.d("XXX", str2);
+                    //Log.d("XXX", str2);
                     responseModel = gson.fromJson(str2, ResponseModel.class);
                     helperCallback.setTerminalList(responseModel.result.list);
+                    break;
+                case  5:
+                    Log.d("XXX", new String(bytes));
+                    PredictionsResponse reslt = gson.fromJson(new String(bytes), PredictionsResponse.class);
+                    if(reslt == null) break;
+                    for(com.revyuk.myterminal.model.Prediction p: reslt.getPredictions()) {
+                        Log.d("XXX", ">> "+p.getDescription());
+                    }
                     break;
             }
         }

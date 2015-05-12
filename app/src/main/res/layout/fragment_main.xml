@@ -1,47 +1,95 @@
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
+    android:background="@drawable/background"
     tools:context=".MainActivity$PlaceholderFragment">
-    <LinearLayout
-        android:layout_weight="1"
+    <TextView
+        android:id="@+id/text1"
+        android:text="Вы хотите заплатить за услугу и не знаете где?"
+        android:textColor="#FFFFFF"
+        android:textStyle="italic"
+        android:textSize="12sp"
+        android:layout_marginTop="20dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:shadowDy="0"
+        android:shadowDx="0"
+        android:shadowRadius="10"
+        android:shadowColor="#000000"
+        android:padding="5dp"
+        android:gravity="center_horizontal"
         android:layout_width="match_parent"
-        android:layout_height="0dp">
-    </LinearLayout>
-    <LinearLayout
-        android:background="#5555FF"
-        android:gravity="center"
-        android:layout_weight="1"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/text2"
+        android:layout_below="@id/text1"
+        android:layout_marginTop="20dp"
+        android:text="Мы поможем найти ее в ближайшем\nплатежном терминале!"
+        android:textSize="17sp"
+        android:textColor="#FFFFFF"
+        android:shadowDy="0"
+        android:shadowDx="0"
+        android:shadowRadius="10"
+        android:shadowColor="#000000"
+        android:padding="5dp"
+        android:layout_centerHorizontal="true"
+        android:gravity="center_horizontal"
         android:layout_width="match_parent"
-        android:layout_height="0dp">
+        android:layout_height="wrap_content" />
+    <ImageView
+        android:scaleType="centerInside"
+        android:id="@+id/terminals"
+        android:src="@drawable/terminals"
+        android:layout_centerInParent="true"
+        android:padding="30dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:id="@+id/next"
+        android:background="@drawable/main_button_bg"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp">
         <TextView
-            android:text="Nearest terminals"
+            android:text="@string/next"
+            android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="#000000"
-            android:textSize="30sp"
+            android:textColor="#333333"
+            android:shadowDy="0"
+            android:shadowDx="0"
+            android:shadowRadius="5"
+            android:shadowColor="#FFFFFF"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:visibility="gone"
+            android:src="@drawable/ic_action_next_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
-    <LinearLayout
-        android:background="#FFFF00"
-        android:gravity="center"
-        android:layout_weight="1"
+    <TextView
+        android:id="@+id/text4"
+        android:layout_above="@id/next"
+        android:gravity="center_horizontal"
+        android:text="ПЛАТЕЖНЫЕ ТЕРМИНАЛЫ\nУКРАИНЫ"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:shadowDy="0"
+        android:shadowDx="0"
+        android:shadowRadius="10"
+        android:shadowColor="#000000"
+        android:padding="5dp"
+        android:layout_marginBottom="20dp"
+        android:layout_centerHorizontal="true"
         android:layout_width="match_parent"
-        android:layout_height="0dp">
-        <TextView
-            android:text="UA"
-            android:textStyle="bold"
-            android:textColor="#000000"
-            android:textSize="30sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_weight="1"
-        android:layout_width="match_parent"
-        android:layout_height="0dp">
-    </LinearLayout>
-</LinearLayout>
+        android:layout_height="wrap_content" />
+</RelativeLayout>
