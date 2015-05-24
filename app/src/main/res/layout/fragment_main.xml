@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/background"
     tools:context=".MainActivity$PlaceholderFragment">
     <TextView
         android:id="@+id/text1"
@@ -42,7 +41,6 @@
     <ImageView
         android:scaleType="centerInside"
         android:id="@+id/terminals"
-        android:src="@drawable/terminals"
         android:layout_centerInParent="true"
         android:padding="30dp"
         android:layout_width="wrap_content"

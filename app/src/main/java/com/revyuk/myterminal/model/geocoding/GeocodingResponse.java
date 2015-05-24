@@ -6,4 +6,12 @@ package com.revyuk.myterminal.model.geocoding;
 public class GeocodingResponse {
     public String status;
     public GeocodingResult[] results;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public GeocodingResult[] getResults() {
+        return results;
+    }
 }

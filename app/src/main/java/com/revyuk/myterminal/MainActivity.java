@@ -16,6 +16,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -31,6 +32,7 @@ import com.google.android.gms.maps.model.LatLng;
 public class MainActivity extends ActionBarActivity  implements MainFragment.SelectorFragment {
     public static final int HANDLE_MSG_ONE = 1;
     public static final int HANDLE_MSG_TWO = 2;
+    public static final int HANDLE_MSG_THREE = 3;
 
     public AdView adView;
     public GoogleApiClient googleApiClient;
@@ -41,10 +43,11 @@ public class MainActivity extends ActionBarActivity  implements MainFragment.Sel
         public boolean handleMessage(Message msg) {
             Bundle bundle;
             switch (msg.what) {
+                case HANDLE_MSG_THREE:
+                    myPos = new LatLng(msg.getData().getDouble("lat"), msg.getData().getDouble("lng"));
                 case HANDLE_MSG_ONE:
-                    if(msg.getData() != null) Log.d("XXX", "LAT: "+msg.getData().getDouble("lat")+", LNG: "+msg.getData().getDouble("lng"));
-                    SearchFragment fragment;
-                    fragment = new SearchFragment();
+                    //if(msg.getData() != null) Log.d("XXX", "LAT: "+msg.getData().getDouble("lat")+", LNG: "+msg.getData().getDouble("lng"));
+                    SearchFragment fragment = new SearchFragment();
                     bundle = new Bundle();
                     bundle.putDouble("lat", myPos.latitude);
                     bundle.putDouble("lng", myPos.longitude);

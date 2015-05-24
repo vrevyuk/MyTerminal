@@ -5,7 +5,7 @@ android {
         config {
             keyAlias 'vrevyuk'
             keyPassword 'retroi2002'
-            storeFile file('/Users/glavnyjpolzovatel/Documents/android/key/vrevyuk.jks')
+            storeFile file('D:/Android/StudioProjects/key/vrevyuk.jks')
             storePassword 'retroi2002'
         }
     }
