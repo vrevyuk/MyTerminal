@@ -4,7 +4,7 @@
     android:id="@android:id/text1"
     android:text="Bla bla bla"
     android:singleLine="true"
-    android:background="@drawable/ic_action_next_item"
+    android:background="@drawable/bg_row"
     android:padding="5dp"
     android:layout_margin="5dp"
     android:textSize="17sp"

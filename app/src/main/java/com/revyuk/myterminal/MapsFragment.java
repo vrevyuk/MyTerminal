@@ -1,7 +1,9 @@
 package com.revyuk.myterminal;
 
 
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,7 +13,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -27,8 +31,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.revyuk.myterminal.adapters.AutocompleteAdapter;
+import com.revyuk.myterminal.model.Prediction;
 import com.revyuk.myterminal.model.PredictionsResponse;
 import com.revyuk.myterminal.model.geocoding.GeocodingResponse;
+import com.revyuk.myterminal.model.geocoding.GeocodingResult;
 
 public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListener, GoogleApiHelper.GoogleApiHelperCallback, AdapterView.OnItemClickListener {
     private LatLng myPosition;
@@ -37,8 +43,8 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListen
     GoogleApiHelper apiHelper;
 
     private AutocompleteAdapter adapter;
-    private EditText text_location;
-    private ListView list_location;
+    private AutoCompleteTextView text_location;
+    //private ListView list_location;
 
     public MapsFragment() {
     }
@@ -62,6 +68,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListen
             myPosition = new LatLng(0,0);
         }
         apiHelper = GoogleApiHelper.newInstance(this);
+        new AlertDialog.Builder(getActivity()).setTitle(" ").setMessage(getActivity().getString(R.string.map_goal)).setPositiveButton("Ok", null).show();
     }
 
     @Override
@@ -71,10 +78,11 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListen
         MapFragment mapFragment = MapFragment.newInstance();
         getFragmentManager().beginTransaction().replace(R.id.map_container, mapFragment).commit();
         mapFragment.getMapAsync(new MapReady());
-        text_location = (EditText) view.findViewById(R.id.text_location);
+        text_location = (AutoCompleteTextView) view.findViewById(R.id.text_location);
         text_location.addTextChangedListener(new TextWatcher());
-        list_location = (ListView) view.findViewById(R.id.list_location);
-        list_location.setOnItemClickListener(this);
+        text_location.setOnItemClickListener(this);
+        //list_location = (ListView) view.findViewById(R.id.list_location);
+        //list_location.setOnItemClickListener(this);
         return view;
     }
 
@@ -104,22 +112,23 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListen
             switch (who) {
                 case GoogleApiHelper.WHO_AUTOTEXT:
                     PredictionsResponse predictionsResponse = gson.fromJson(response, PredictionsResponse.class);
+                    //Log.d("XXX", predictionsResponse.getStatus()+ " > prediction: " + predictionsResponse.getPredictions().size());
                     if(predictionsResponse.getStatus().equalsIgnoreCase("OK")) {
-                        if(adapter == null) {
-                            adapter = new AutocompleteAdapter(getActivity(), R.layout.autocomplete_item, predictionsResponse.getPredictions());
-                            list_location.setAdapter(adapter);
-                        } else {
-                            adapter.clear();
-                            adapter.addAll(predictionsResponse.getPredictions());
-                            adapter.notifyDataSetChanged();
-                        }
+                        adapter = new AutocompleteAdapter(getActivity(), R.layout.autocomplete_item, predictionsResponse.getPredictions());
+                        text_location.setAdapter(adapter);
                     }
                     break;
                 case GoogleApiHelper.WHO_DETAIL_PLACE:
-                    Log.d("XXX", response);
+                    //Log.d("XXX", response);
                     GeocodingResponse geoResponse = gson.fromJson(response, GeocodingResponse.class);
-                    if(geoResponse.getStatus().equalsIgnoreCase("OK")) {
-
+                    if(geoResponse.getStatus().equalsIgnoreCase("OK") && geoResponse.getResult() != null) {
+                        adapter.clear(); adapter.notifyDataSetChanged();
+                        GeocodingResult geo = geoResponse.getResult();
+                        LatLng pos = new LatLng(geo.geometry.location.lat, geo.geometry.location.lng);
+                        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(pos, 15);
+                        map.moveCamera(cameraUpdate);
+                        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(text_location.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                     }
                     break;
             }
@@ -130,12 +139,13 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListen
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-        Log.d("XXX", adapter.getItem(position).toString());
+        //Log.d("XXX", adapter.getItem(position).toString());
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-                String placeId = adapter.getItem(position).getPlaceId();
-                apiHelper.detailPlace(placeId);
+                Prediction place = adapter.getItem(position);
+                apiHelper.detailPlace(place.getPlaceId());
+                text_location.setText(place.getDescription());
             }
         });
     }
@@ -166,6 +176,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListen
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+            map.clear();
             final String text = s.toString();
             new Handler().post(new Runnable() {
                 @Override
