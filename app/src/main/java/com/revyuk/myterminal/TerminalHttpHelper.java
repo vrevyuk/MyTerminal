@@ -54,6 +54,10 @@ public class TerminalHttpHelper {
         context = fragment.getActivity();
     }
 
+    public void sendWarningFeedback() {
+
+    }
+
     public void getMyAddr(LatLng pos) {
         String url = "http://maps.googleapis.com/maps/api/geocode/json";
         params = new RequestParams();

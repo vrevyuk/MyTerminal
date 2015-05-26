@@ -19,6 +19,7 @@ public class GoogleApiHelper {
 
     public static final int WHO_AUTOTEXT = 1;
     public static final int WHO_DETAIL_PLACE = 2;
+    public static final int SEND_FEEDBACK = 3;
 
     public interface GoogleApiHelperCallback {
         void onResult(boolean success, int who, String response);
@@ -72,5 +73,12 @@ public class GoogleApiHelper {
         params.add("key", "AIzaSyDCE7xs40dLOf8pQpCRcZKOZuYAErdMz18");
         params.setContentEncoding("UTF-8");
         httpClient.get(url, params, new HttpHandler(WHO_DETAIL_PLACE));
+    }
+
+    public void sendFeedback(int mode, String msg) {
+        String url = "http://terminal.vivat-tv.com/terminal_feedback.php";
+        RequestParams params = new RequestParams();
+        params.setContentEncoding("UTF-8");
+        httpClient.post(url, params, new HttpHandler(SEND_FEEDBACK));
     }
 }

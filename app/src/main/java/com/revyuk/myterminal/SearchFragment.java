@@ -47,7 +47,7 @@ public class SearchFragment extends Fragment implements TerminalHttpHelper.Helpe
     TextView found_count, current_location_text;
     LatLng myLatLng;
     double[] lats, lngs;
-    String[] anchor_title, anchor_snippet;
+    String[] anchor_title, anchor_snippet, ids;
     TerminalAdapter adapter;
     String myAddress;
 
@@ -144,6 +144,7 @@ public class SearchFragment extends Fragment implements TerminalHttpHelper.Helpe
                     intent.putExtra("lng", myLatLng.longitude);
                     intent.putExtra("title", anchor_title);
                     intent.putExtra("snippet", anchor_snippet);
+                    intent.putExtra("id", ids);
                     startActivity(intent);
                     pd.show();
                 }
@@ -163,6 +164,7 @@ public class SearchFragment extends Fragment implements TerminalHttpHelper.Helpe
             intent.putExtra("lng", myLatLng.longitude);
             intent.putExtra("title", new String[]{anchor_title[which]});
             intent.putExtra("snippet", new String[]{anchor_snippet[which]});
+            intent.putExtra("id", new String[]{ids[which]});
             startActivity(intent);
         }
     }
@@ -232,11 +234,13 @@ public class SearchFragment extends Fragment implements TerminalHttpHelper.Helpe
         lngs = new double[resultList.length];
         anchor_title = new String[resultList.length];
         anchor_snippet = new String[resultList.length];
+        ids = new String[resultList.length];
         for(int i=0; i<resultList.length; i++) {
             lats[i] = resultList[i].lat;
             lngs[i] = resultList[i].lng;
             anchor_title[i] = resultList[i].street + " " + resultList[i].build;
             anchor_snippet[i] = resultList[i].location;
+            ids[i] = resultList[i].id;
         }
         pd.dismiss();
     }

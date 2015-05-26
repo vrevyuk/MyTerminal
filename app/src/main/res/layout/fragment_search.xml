@@ -25,8 +25,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <LinearLayout
+            android:background="@drawable/bg_light"
             android:gravity="center_vertical"
             android:orientation="horizontal"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
@@ -37,11 +40,12 @@
                 android:shadowColor="#000000"
                 android:singleLine="true"
                 android:layout_width="0dp"
+                android:paddingLeft="5dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content" />
             <ImageView
                 android:id="@+id/change_location_img"
-                android:src="@android:drawable/ic_dialog_map"
+                android:src="@drawable/ic_action_arrow_drop_down"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>
@@ -65,8 +69,6 @@
             android:layout_height="wrap_content">
             <Spinner
                 android:id="@+id/radius"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </LinearLayout>
@@ -91,8 +93,6 @@
             android:layout_height="wrap_content">
             <Spinner
                 android:id="@+id/service"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </LinearLayout>
@@ -117,8 +117,6 @@
             android:layout_height="wrap_content">
             <Spinner
                 android:id="@+id/agent"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </LinearLayout>

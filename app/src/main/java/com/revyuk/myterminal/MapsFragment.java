@@ -4,6 +4,8 @@ package com.revyuk.myterminal;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -17,7 +19,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -36,7 +40,11 @@ import com.revyuk.myterminal.model.PredictionsResponse;
 import com.revyuk.myterminal.model.geocoding.GeocodingResponse;
 import com.revyuk.myterminal.model.geocoding.GeocodingResult;
 
-public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListener, GoogleApiHelper.GoogleApiHelperCallback, AdapterView.OnItemClickListener {
+import java.util.zip.Inflater;
+
+public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListener
+        , GoogleApiHelper.GoogleApiHelperCallback
+        , AdapterView.OnItemClickListener {
     private LatLng myPosition;
     private GoogleMap map;
     private Marker marker;
@@ -44,7 +52,6 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListen
 
     private AutocompleteAdapter adapter;
     private AutoCompleteTextView text_location;
-    //private ListView list_location;
 
     public MapsFragment() {
     }
@@ -61,6 +68,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        final SharedPreferences preferences = getActivity().getSharedPreferences("_preferences", Context.MODE_PRIVATE);
         Bundle bundle = getArguments();
         if(bundle != null) {
             myPosition = new LatLng(bundle.getDouble("lat"), bundle.getDouble("lng"));
@@ -68,7 +76,16 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListen
             myPosition = new LatLng(0,0);
         }
         apiHelper = GoogleApiHelper.newInstance(this);
-        new AlertDialog.Builder(getActivity()).setTitle(" ").setMessage(getActivity().getString(R.string.map_goal)).setPositiveButton("Ok", null).show();
+        if(!preferences.getBoolean("show_dialog1_onmap", true)) return;
+        new AlertDialog.Builder(getActivity()).setTitle(" ")
+                .setMessage(getActivity().getString(R.string.map_goal))
+                .setPositiveButton("Да", null)
+                .setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        preferences.edit().putBoolean("show_dialog1_onmap", false).apply();
+                    }
+                }).show();
     }
 
     @Override
@@ -81,8 +98,6 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListen
         text_location = (AutoCompleteTextView) view.findViewById(R.id.text_location);
         text_location.addTextChangedListener(new TextWatcher());
         text_location.setOnItemClickListener(this);
-        //list_location = (ListView) view.findViewById(R.id.list_location);
-        //list_location.setOnItemClickListener(this);
         return view;
     }
 
@@ -129,6 +144,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListen
                         map.moveCamera(cameraUpdate);
                         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(text_location.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                        Toast.makeText(getActivity(), "Нажмите на карте в необходимой точке для фиксации новых координат", Toast.LENGTH_LONG).show();
                     }
                     break;
             }
@@ -151,7 +167,6 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListen
     }
 
     private class MapReady implements OnMapReadyCallback {
-
         @Override
         public void onMapReady(GoogleMap googleMap) {
             map = googleMap;
