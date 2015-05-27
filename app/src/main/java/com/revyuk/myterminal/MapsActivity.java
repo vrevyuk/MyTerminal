@@ -32,6 +32,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
+import com.revyuk.myterminal.model.TerminalsServerResponse;
 import com.revyuk.myterminal.model.geocoding.Bounds;
 
 public class MapsActivity extends FragmentActivity {
@@ -73,6 +75,7 @@ public class MapsActivity extends FragmentActivity {
                 mMap = googleMap;
                 apiHelper = GoogleApiHelper.newInstance(new ApiHelperCallback());
                 mMap.setInfoWindowAdapter(new MyInfoWindowAdapter());
+                mMap.setOnInfoWindowClickListener(new InfoWindowClickListener());
                 addMarkers();
             }
         });
@@ -115,7 +118,17 @@ public class MapsActivity extends FragmentActivity {
 
         @Override
         public void onResult(boolean success, int who, String response) {
-
+            Log.d("XXX", response);
+            Gson gson = new Gson();
+            TerminalsServerResponse serverResponse = gson.fromJson(response, TerminalsServerResponse.class);
+            if(serverResponse.isSuccess()) {
+                new AlertDialog.Builder(MapsActivity.this).setTitle(" ")
+                        .setMessage("Спасибо за комментарий.")
+                        .setNeutralButton("Ok", null)
+                        .show();
+            } else {
+                Toast.makeText(MapsActivity.this, "Ошибка сервера, попробуйте позже.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -129,41 +142,30 @@ public class MapsActivity extends FragmentActivity {
         @Override
         public View getInfoContents(Marker marker) {
             View view = ((LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE)).inflate(R.layout.marker_infoview, null, false);
-            ImageButton warning = (ImageButton) view.findViewById(R.id.markerWarning);
             TextView title = (TextView) view.findViewById(R.id.markerTitle);
-            TextView snippet = (TextView) view.findViewById(R.id.markerSnippet);
             title.setText(marker.getTitle());
-            snippet.setText("<- feedback");
-            warning.setTag(marker.getSnippet());
-            warning.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d("XXX", "Click " + v.getTag());
-                }
-            });
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d("XXX", "Click2");
-                    String id = (String) v.getTag();
-                    View feedbackView = ((LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE)).inflate(R.layout.feedback_dialog_message, null, false);
-                    final EditText feedbackMessage = (EditText) feedbackView.findViewById(R.id.feedback_message);
-                    feedbackMessage.setTag(id);
-                    new AlertDialog.Builder(MapsActivity.this).setTitle("Feedback")
-                            .setView(feedbackView)
-                            .setNegativeButton("Cancel", null)
-                            .setPositiveButton("Send", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    apiHelper.sendFeedback(GoogleApiHelper.SEND_FEEDBACK, "feedback id: "+feedbackMessage.getTag()+" message: "+feedbackMessage.getText().toString());
-                                    Log.d("XXX", "feedback id: "+feedbackMessage.getTag()+" message: "+feedbackMessage.getText().toString());
-                                }
-                            }).show();
-                }
-            });
-            Log.d("XXX", "title: "+marker.getTitle()+", snippet: "+marker.getSnippet()+", view "+view.getTag());
             return view;
         }
     }
 
+    private class InfoWindowClickListener implements GoogleMap.OnInfoWindowClickListener {
+
+        @Override
+        public void onInfoWindowClick(Marker marker) {
+            String id = marker.getSnippet();
+            View feedbackView = ((LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE)).inflate(R.layout.feedback_dialog_message, null, false);
+            final EditText feedbackMessage = (EditText) feedbackView.findViewById(R.id.feedback_message);
+            feedbackMessage.setTag(id);
+            new AlertDialog.Builder(MapsActivity.this).setTitle("Feedback")
+                    .setView(feedbackView)
+                    .setNegativeButton("Cancel", null)
+                    .setPositiveButton("Send", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            apiHelper.sendFeedback(GoogleApiHelper.SEND_FEEDBACK, (String)feedbackMessage.getTag(), feedbackMessage.getText().toString());
+                            Log.d("XXX", "feedback id: "+feedbackMessage.getTag()+" message: "+feedbackMessage.getText().toString());
+                        }
+                    }).show();
+        }
+    }
 }

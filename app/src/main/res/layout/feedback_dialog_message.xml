@@ -6,14 +6,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <TextView
-        android:text="Оставьте свой комментрий по этому терминалу."
+        android:text="Оставьте свой комментарий о достоверности координат этого терминала."
         android:layout_margin="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <EditText
         android:id="@+id/feedback_message"
+        android:gravity="top"
         android:layout_margin="10dp"
-        android:lines="5"
+        android:singleLine="true"
+        android:imeOptions="actionSend"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 </LinearLayout>

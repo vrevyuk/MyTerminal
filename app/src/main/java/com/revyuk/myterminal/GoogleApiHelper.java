@@ -75,10 +75,13 @@ public class GoogleApiHelper {
         httpClient.get(url, params, new HttpHandler(WHO_DETAIL_PLACE));
     }
 
-    public void sendFeedback(int mode, String msg) {
-        String url = "http://terminal.vivat-tv.com/terminal_feedback.php";
+    public void sendFeedback(int mode, String id, String msg) {
+        String url = "http://terminals.vivat-tv.com/terminal_feedback.php";
         RequestParams params = new RequestParams();
+        params.add("mode", String.valueOf(mode));
+        params.add("id", id);
+        params.add("message", msg);
         params.setContentEncoding("UTF-8");
-        httpClient.post(url, params, new HttpHandler(SEND_FEEDBACK));
+        httpClient.get(url, params, new HttpHandler(SEND_FEEDBACK));
     }
 }
