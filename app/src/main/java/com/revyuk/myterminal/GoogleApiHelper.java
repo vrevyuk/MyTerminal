@@ -28,6 +28,8 @@ public class GoogleApiHelper {
     private GoogleApiHelper(GoogleApiHelperCallback callback) {
         this.callback = (GoogleApiHelperCallback) callback;
         httpClient = new AsyncHttpClient();
+        httpClient.setConnectTimeout(10000);
+        httpClient.setResponseTimeout(20000);
     }
 
     public static GoogleApiHelper newInstance(GoogleApiHelperCallback callback) {

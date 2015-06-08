@@ -36,14 +36,21 @@ import com.google.gson.Gson;
 import com.revyuk.myterminal.model.TerminalsServerResponse;
 import com.revyuk.myterminal.model.geocoding.Bounds;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class MapsActivity extends FragmentActivity {
 
     private GoogleMap mMap;
     private GoogleApiHelper apiHelper;
     private double[] lats, lngs;
     private LatLng myLatLng;
-    String[] anchor_title, anchor_snippet, ids;
+    String[] anchor_title, anchor_snippet, ids, providers;
     AdView adView;
+    Marker currentMarker;
+    Map<String, String> idTerminalMarker = new HashMap<>();
+    ImageButton feedbackBtn;
+    String[] feedbackMessages = new String[] {"терминал отсутствует","не той терминальной сети","нет услуги в терминале","терминал не работает"," Спасибо, все ок"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,13 +64,32 @@ public class MapsActivity extends FragmentActivity {
             anchor_title = intent.getStringArrayExtra("title");
             anchor_snippet = intent.getStringArrayExtra("snippet");
             ids = intent.getStringArrayExtra("id");
+            providers = intent.getStringArrayExtra("provider");
         }
+
+        feedbackBtn = (ImageButton) findViewById(R.id.feedbackButton);
+        feedbackBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(currentMarker == null) return;
+                final String id = idTerminalMarker.get(currentMarker.getId());
+                new AlertDialog.Builder(MapsActivity.this).setTitle(currentMarker.getTitle())
+                        .setItems(feedbackMessages, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                apiHelper.sendFeedback(GoogleApiHelper.SEND_FEEDBACK, String.valueOf(id), feedbackMessages[which]);
+                            }
+                        })
+                        .setNegativeButton("Cancel", null).show();
+            }
+        });
+
         adView = new AdView(this);
         adView.setAdUnitId(getString(R.string.admob_key));
         adView.setAdSize(AdSize.SMART_BANNER);
         ((LinearLayout)findViewById(R.id.ads_layout_on_map)).addView(adView);
         // .addTestDevice("B753262F3A437B6B499FE87973C01D79")
-        adView.loadAd(new AdRequest.Builder().addTestDevice("B753262F3A437B6B499FE87973C01D79").build());
+        adView.loadAd(new AdRequest.Builder().build());
     }
 
     @Override
@@ -73,9 +99,18 @@ public class MapsActivity extends FragmentActivity {
             @Override
             public void onMapReady(GoogleMap googleMap) {
                 mMap = googleMap;
+                mMap.setTrafficEnabled(false);
+                mMap.getUiSettings().setMapToolbarEnabled(false);
+                mMap.getUiSettings().setMyLocationButtonEnabled(true);
                 apiHelper = GoogleApiHelper.newInstance(new ApiHelperCallback());
                 mMap.setInfoWindowAdapter(new MyInfoWindowAdapter());
-                mMap.setOnInfoWindowClickListener(new InfoWindowClickListener());
+                mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                    @Override
+                    public void onMapClick(LatLng latLng) {
+                        feedbackBtn.setVisibility(View.GONE);
+                        currentMarker = null;
+                    }
+                });
                 addMarkers();
             }
         });
@@ -98,12 +133,13 @@ public class MapsActivity extends FragmentActivity {
         LatLngBounds.Builder bounds = new LatLngBounds.Builder();
         for(int i=0; i<lats.length; i++) {
             Marker marker;
-            mMap.addMarker(new MarkerOptions().position(new LatLng(lats[i], lngs[i])).title(anchor_title[i]).snippet(ids[i]).draggable(false));
+            marker = mMap.addMarker(new MarkerOptions().position(new LatLng(lats[i], lngs[i])).title(anchor_title[i]).snippet(providers[i]).draggable(false));
+            idTerminalMarker.put(marker.getId(), ids[i]);
             bounds = bounds.include(new LatLng(lats[i], lngs[i]));
             //Log.d("XXX", "Add "+lats[i]+", "+lngs[i]);
         }
         bounds = bounds.include(myLatLng);
-        mMap.addMarker(new MarkerOptions().position(myLatLng).title("My position").snippet("0").draggable(false).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+        mMap.addMarker(new MarkerOptions().position(myLatLng).title("Вы").snippet("").draggable(false).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
         final CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds.build(), 100);
         mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
@@ -118,10 +154,11 @@ public class MapsActivity extends FragmentActivity {
 
         @Override
         public void onResult(boolean success, int who, String response) {
-            Log.d("XXX", response);
             Gson gson = new Gson();
             TerminalsServerResponse serverResponse = gson.fromJson(response, TerminalsServerResponse.class);
             if(serverResponse.isSuccess()) {
+                feedbackBtn.setVisibility(View.GONE);
+                currentMarker = null;
                 new AlertDialog.Builder(MapsActivity.this).setTitle(" ")
                         .setMessage("Спасибо за комментарий.")
                         .setNeutralButton("Ok", null)
@@ -143,29 +180,12 @@ public class MapsActivity extends FragmentActivity {
         public View getInfoContents(Marker marker) {
             View view = ((LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE)).inflate(R.layout.marker_infoview, null, false);
             TextView title = (TextView) view.findViewById(R.id.markerTitle);
-            title.setText(marker.getTitle());
+            TextView snippet = (TextView) view.findViewById(R.id.markerSnippet);
+            title.setText(marker.getTitle()==null?"":marker.getTitle());
+            snippet.setText(marker.getSnippet()==null?"":marker.getSnippet());
+            currentMarker = marker;
+            feedbackBtn.setVisibility(View.VISIBLE);
             return view;
-        }
-    }
-
-    private class InfoWindowClickListener implements GoogleMap.OnInfoWindowClickListener {
-
-        @Override
-        public void onInfoWindowClick(Marker marker) {
-            String id = marker.getSnippet();
-            View feedbackView = ((LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE)).inflate(R.layout.feedback_dialog_message, null, false);
-            final EditText feedbackMessage = (EditText) feedbackView.findViewById(R.id.feedback_message);
-            feedbackMessage.setTag(id);
-            new AlertDialog.Builder(MapsActivity.this).setTitle("Feedback")
-                    .setView(feedbackView)
-                    .setNegativeButton("Cancel", null)
-                    .setPositiveButton("Send", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            apiHelper.sendFeedback(GoogleApiHelper.SEND_FEEDBACK, (String)feedbackMessage.getTag(), feedbackMessage.getText().toString());
-                            Log.d("XXX", "feedback id: "+feedbackMessage.getTag()+" message: "+feedbackMessage.getText().toString());
-                        }
-                    }).show();
         }
     }
 }

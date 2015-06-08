@@ -95,7 +95,7 @@ public class MainActivity extends ActionBarActivity  implements MainFragment.Sel
         adView.setAdSize(AdSize.SMART_BANNER);
         ((LinearLayout)findViewById(R.id.ads_layout)).addView(adView);
         // .addTestDevice("B753262F3A437B6B499FE87973C01D79")
-        adView.loadAd(new AdRequest.Builder().addTestDevice("B753262F3A437B6B499FE87973C01D79").build());
+        adView.loadAd(new AdRequest.Builder().build());
     }
 
     @Override

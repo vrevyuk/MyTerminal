@@ -17,4 +17,23 @@ public class ResultList {
     public double lat;
     public double lng;
     public double distance;
+
+    @Override
+    public String toString() {
+        return "ResultList{" +
+                "id='" + id + '\'' +
+                ", provider='" + provider + '\'' +
+                ", service='" + service + '\'' +
+                ", agent='" + agent + '\'' +
+                ", area='" + area + '\'' +
+                ", city='" + city + '\'' +
+                ", street='" + street + '\'' +
+                ", build='" + build + '\'' +
+                ", location='" + location + '\'' +
+                ", status='" + status + '\'' +
+                ", lat=" + lat +
+                ", lng=" + lng +
+                ", distance=" + distance +
+                '}';
+    }
 }

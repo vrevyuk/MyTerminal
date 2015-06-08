@@ -49,7 +49,8 @@ public class TerminalHttpHelper {
     public TerminalHttpHelper (SearchFragment fragment) {
         helperCallback = fragment;
         gson = new Gson();
-        client.setConnectTimeout(5);
+        client.setConnectTimeout(20000);
+        client.setResponseTimeout(20000);
         radius = fragment.getResources().getStringArray(R.array.radius_array)[0];
         context = fragment.getActivity();
     }

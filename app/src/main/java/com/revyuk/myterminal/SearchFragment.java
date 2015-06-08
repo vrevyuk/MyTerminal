@@ -47,7 +47,7 @@ public class SearchFragment extends Fragment implements TerminalHttpHelper.Helpe
     TextView found_count, current_location_text;
     LatLng myLatLng;
     double[] lats, lngs;
-    String[] anchor_title, anchor_snippet, ids;
+    String[] anchor_title, anchor_snippet, ids, providers;
     TerminalAdapter adapter;
     String myAddress;
 
@@ -100,7 +100,7 @@ public class SearchFragment extends Fragment implements TerminalHttpHelper.Helpe
 
         view.findViewById(R.id.as_list_btn).setOnClickListener(this);
         view.findViewById(R.id.show_on_map).setOnClickListener(this);
-        view.findViewById(R.id.change_location_img).setOnClickListener(this);
+        view.findViewById(R.id.change_location).setOnClickListener(this);
 
         found_count = (TextView) view.findViewById(R.id.found_count);
         return view;
@@ -121,7 +121,7 @@ public class SearchFragment extends Fragment implements TerminalHttpHelper.Helpe
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.change_location_img:
+            case R.id.change_location:
                 ((MainActivity)getActivity()).handler.sendEmptyMessage(MainActivity.HANDLE_MSG_TWO);
                 break;
             case R.id.as_list_btn:
@@ -132,7 +132,7 @@ public class SearchFragment extends Fragment implements TerminalHttpHelper.Helpe
                 if(adapter.getCount() > 0) new AlertDialog.Builder(getActivity()).setTitle(getString(R.string.list_title)).setAdapter(adapter, new MyOnClickListener()).show();
                 break;
             case R.id.show_on_map:
-                if(adapter.getCount()==0) {
+                if(adapter != null && adapter.getCount()==0) {
                     new AlertDialog.Builder(getActivity()).setMessage(getString(R.string.not_found)).setNeutralButton("OK", null).show();
                     return;
                 }
@@ -145,6 +145,7 @@ public class SearchFragment extends Fragment implements TerminalHttpHelper.Helpe
                     intent.putExtra("title", anchor_title);
                     intent.putExtra("snippet", anchor_snippet);
                     intent.putExtra("id", ids);
+                    intent.putExtra("provider", providers);
                     startActivity(intent);
                     pd.show();
                 }
@@ -165,6 +166,7 @@ public class SearchFragment extends Fragment implements TerminalHttpHelper.Helpe
             intent.putExtra("title", new String[]{anchor_title[which]});
             intent.putExtra("snippet", new String[]{anchor_snippet[which]});
             intent.putExtra("id", new String[]{ids[which]});
+            intent.putExtra("provider", new String[]{providers[which]});
             startActivity(intent);
         }
     }
@@ -235,12 +237,14 @@ public class SearchFragment extends Fragment implements TerminalHttpHelper.Helpe
         anchor_title = new String[resultList.length];
         anchor_snippet = new String[resultList.length];
         ids = new String[resultList.length];
+        providers = new String[resultList.length];
         for(int i=0; i<resultList.length; i++) {
             lats[i] = resultList[i].lat;
             lngs[i] = resultList[i].lng;
             anchor_title[i] = resultList[i].street + " " + resultList[i].build;
             anchor_snippet[i] = resultList[i].location;
             ids[i] = resultList[i].id;
+            providers[i] = resultList[i].provider;
         }
         pd.dismiss();
     }

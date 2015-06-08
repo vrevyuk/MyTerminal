@@ -6,8 +6,9 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
     <ImageView
+        android:visibility="gone"
         android:id="@+id/markerWarning"
-        android:src="@drawable/ic_action_communication_comment"
+        android:src="@drawable/ic_stat_action_report_problem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <LinearLayout
@@ -22,8 +23,6 @@
             android:layout_height="wrap_content" />
         <TextView
             android:id="@+id/markerSnippet"
-            android:textSize="8sp"
-            android:text="Нажмите на иконку для обратной связи"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
