@@ -5,7 +5,7 @@ android {
         config {
             keyAlias 'vrevyuk'
             keyPassword 'retroi2002'
-            storeFile file('D:/Android/StudioProjects/key/vrevyuk.jks')
+            storeFile file('/Users/glavnyjpolzovatel/Documents/android/key/vrevyuk.jks')
             storePassword 'retroi2002'
         }
     }
@@ -15,8 +15,8 @@ android {
         applicationId "com.revyuk.myterminal"
         minSdkVersion 11
         targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "2.0"
     }
     buildTypes {
         release {

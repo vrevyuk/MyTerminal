@@ -50,7 +50,7 @@ public class MapsActivity extends FragmentActivity {
     Marker currentMarker;
     Map<String, String> idTerminalMarker = new HashMap<>();
     ImageButton feedbackBtn;
-    String[] feedbackMessages = new String[] {"терминал отсутствует","не той терминальной сети","нет услуги в терминале","терминал не работает"," Спасибо, все ок"};
+    String[] feedbackMessages;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +67,7 @@ public class MapsActivity extends FragmentActivity {
             providers = intent.getStringArrayExtra("provider");
         }
 
+        feedbackMessages = getResources().getStringArray(R.array.feedbackStrings);
         feedbackBtn = (ImageButton) findViewById(R.id.feedbackButton);
         feedbackBtn.setOnClickListener(new View.OnClickListener() {
             @Override

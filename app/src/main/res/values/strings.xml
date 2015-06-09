@@ -29,4 +29,11 @@
         <item>10</item>
         <item>20</item>
     </string-array>
+    <string-array name="feedbackStrings">
+        <item>Терминал отсутствует</item>
+        <item>Неправильное название</item>
+        <item>Нет услуги в терминале</item>
+        <item>Терминал не работает</item>
+        <item>Спасибо, все ок</item>
+    </string-array>
 </resources>
